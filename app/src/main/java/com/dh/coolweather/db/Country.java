@@ -13,7 +13,7 @@ public class Country extends DataSupport {
 
     private String weatherId;//天气数据
 
-    private int cityId;//所属市
+    private int cityId;//所属市,外键
 
     public int getId() {
         return id;
