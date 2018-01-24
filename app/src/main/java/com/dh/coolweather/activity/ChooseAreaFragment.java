@@ -91,6 +91,10 @@ public class ChooseAreaFragment extends Fragment {
                 }else if(currentLevel==LEVEL_CITY){
                     selectedCity=cityList.get(position);
                     queryCountries();
+                }else if(currentLevel==LEVEL_COUNTRY){//选中县，跳转至天气显示界面
+                    String weatherId=countryList.get(position).getWeatherId();
+                    WeatherActivity.actionStart(getActivity(),weatherId);
+                    getActivity().finish();
                 }
             }
         });

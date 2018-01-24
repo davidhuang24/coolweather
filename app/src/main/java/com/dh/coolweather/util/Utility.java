@@ -5,6 +5,9 @@ import android.text.TextUtils;
 import com.dh.coolweather.db.City;
 import com.dh.coolweather.db.Country;
 import com.dh.coolweather.db.Province;
+import com.dh.coolweather.gson.Weather;
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +15,9 @@ import org.json.JSONObject;
 import java.util.List;
 
 /**
- * 用JSONObject解析从服务器获取的Json数据
+ * 解析工具类
+ * 1.省市县Json数据:用JSONObject解析从服务器获取的省市县Json数据;
+ * 2.天气Json数据:先JSONObject解析获取主体内容,后GSON解析JSONObject映射到Weather对象
  */
 
 public class Utility {
@@ -77,6 +82,20 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    //先JSONObject解析获取主体内容,后GSON解析JSONObject映射到Weather对象
+    public static Weather handleWeatherResponse(String response){
+        try{
+            JSONObject jsonObject=new JSONObject(response);
+            JSONArray jsonArray=jsonObject.getJSONArray("HeWeather");
+            String weatherContent=jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent,Weather.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }
