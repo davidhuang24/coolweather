@@ -11,8 +11,8 @@
     <string name="suggestion">生活建议</string>
     <string name="weather_url_head">http://guolin.tech/api/weather?cityid=</string>
     <string name="hefeng_weather_key">key=2c8540eab5e545c2ae75af6574ff010e</string>
-    <string name="comfort">舒适度： </string>
-    <string name="car_wash">洗车指数: </string>
-    <string name="sport">运动建议: </string>
+    <string name="comfort">舒适度：  </string>
+    <string name="car_wash">洗车指数：  </string>
+    <string name="sport">运动建议：  </string>
     <string name="get_bingpicurl_url">http://guolin.tech/api/bing_pic</string>
 </resources>

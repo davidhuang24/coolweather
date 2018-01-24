@@ -93,8 +93,15 @@ public class ChooseAreaFragment extends Fragment {
                     queryCountries();
                 }else if(currentLevel==LEVEL_COUNTRY){//选中县，跳转至天气显示界面
                     String weatherId=countryList.get(position).getWeatherId();
-                    WeatherActivity.actionStart(getActivity(),weatherId);
-                    getActivity().finish();
+                    if(getActivity() instanceof  MainActivity){//Fragment的context是MainActivity
+                        WeatherActivity.actionStart(getActivity(),weatherId);
+                        getActivity().finish();
+                    }else if(getActivity() instanceof WeatherActivity){
+                        WeatherActivity weatherActivity=(WeatherActivity)getActivity();
+                        weatherActivity.drawerLayout.closeDrawers();
+                        weatherActivity.swipeRefresh.setRefreshing(true);
+                        weatherActivity.requestWeather(weatherId);
+                    }
                 }
             }
         });

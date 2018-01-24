@@ -3,18 +3,21 @@ package com.dh.coolweather.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +34,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class WeatherActivity extends AppCompatActivity {
+public class WeatherActivity extends AppCompatActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener{
 
     private ScrollView weatherLayout;
 
@@ -57,6 +60,14 @@ public class WeatherActivity extends AppCompatActivity {
 
     private ImageView bingPicImg;
 
+    public SwipeRefreshLayout swipeRefresh;
+
+    public DrawerLayout drawerLayout;
+
+    private Button navButton;
+
+    private String weatherId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,14 +92,21 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText=(TextView) findViewById(R.id.car_wash_text);
         sportText=(TextView) findViewById(R.id.sport_text);
         bingPicImg=(ImageView) findViewById(R.id.bing_pic_img);
+        navButton=(Button) findViewById(R.id.nav_button);
+        drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
+        swipeRefresh=(SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefresh.setOnRefreshListener(this);
+        navButton.setOnClickListener(this);
 
         SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString=prefs.getString("weather",null);//SharedPreferences实现缓存天气数据功能
         if(weatherString!=null){//有缓存时直接解析天气数据
             Weather weather= Utility.handleWeatherResponse(weatherString);
             showWeatherInfo(weather);
+            weatherId =weather.basic.weatherId;
         }else{//没有缓存时从服务器获取天气数据
-            String weatherId=getIntent().getStringExtra("weather_id");
+            weatherId=getIntent().getStringExtra("weather_id");
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
@@ -128,6 +146,7 @@ public class WeatherActivity extends AppCompatActivity {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败",
                                     Toast.LENGTH_SHORT).show();
                         }
+                        swipeRefresh.setRefreshing(false);//刷新结束,隐藏刷新进度条
                     }
                 });
             }
@@ -139,6 +158,7 @@ public class WeatherActivity extends AppCompatActivity {
                     public void run() {
                         Toast.makeText(WeatherActivity.this, "获取天气信息失败",
                                 Toast.LENGTH_SHORT).show();
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -227,5 +247,20 @@ public class WeatherActivity extends AppCompatActivity {
         Intent intent=new Intent(context,WeatherActivity.class);
         intent.putExtra("weather_id",weatherId);
         context.startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.nav_button:
+                Log.d("nav_button", "onClick: ------------------------->");
+                drawerLayout.openDrawer(GravityCompat.START);
+            break;
+        }
+    }
+
+    @Override
+    public void onRefresh() {//下拉刷新
+        requestWeather(weatherId);
     }
 }
